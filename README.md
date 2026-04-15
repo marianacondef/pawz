@@ -1,10 +1,10 @@
 # Pawz 🐾
-
+---
 > Aplicação móvel para gestão centralizada da saúde e bem-estar de animais de estimação.
-
+#### Autor: Mariana Conde Fidelis | a86831@ualg.pt | 2025/26
 ---
 
-## Descrição do Projeto
+## 📖 Descrição do Projeto
 
 Pawz é uma aplicação móvel desenvolvida em Flutter que permite aos tutores de animais de estimação centralizar toda a informação de saúde dos seus pets em um único lugar. A aplicação busca resolver um problema de descentralização dos dados veterinários, que normalmente ficam dispersos em cadernetas físicas e documentos avulsos, levando a lacunas e esquecimento por parte dos tutores. 
 
