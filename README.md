@@ -1,7 +1,6 @@
 # Pawz 🐾
 ---
 > Aplicação móvel para gestão centralizada da saúde e bem-estar de animais de estimação.
-#### Autor: Mariana Conde Fidelis | a86831@ualg.pt | 2025/26
 ---
 
 ## 📖 Descrição do Projeto
@@ -132,5 +131,25 @@ Global
 
 ---
 
+## Autor
+
+- **Nome:** Mariana Conde Fidelis
+- **Número de Aluno:** 86831
+- **Email Institucional:** a86831@ualg.pt
+- **Curso:** Engenharia de Sistemas e Tecnologias Informáticas
+- **Ano Letivo:** 2025/26
+
+
+## Licença
+
+*Nota: Este é um projeto académico sujeito a avaliação, pelo que se encontra num repositório estritamente privado, em total conformidade com os regulamentos internos da universidade.*
+
+Num cenário hipotético de mercado de trabalho, em que este repositório fosse de código aberto, o *software* seria distribuído sob a Licença MIT - consulte o ficheiro [LICENSE.md](LICENSE.md) para os limites da sua utilização.
+
+## Referências
+
+- [Flutter Documentation](https://docs.flutter.dev) - Documentação oficial do Flutter
+- [Dart Documentation](https://dart.dev/guides) - Documentação oficial do Dart
+- [Título do Tutorial/Artigo](link) - Descrição breve da relevância para o projeto
 
 > Este README será expandido ao longo do desenvolvimento com instruções de instalação, screenshots, diagramas de arquitetura detalhados e guia de utilização completo.
