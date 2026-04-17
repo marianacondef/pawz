@@ -150,6 +150,5 @@ Num cenário hipotético de mercado de trabalho, em que este repositório fosse 
 
 - [Flutter Documentation](https://docs.flutter.dev) - Documentação oficial do Flutter
 - [Dart Documentation](https://dart.dev/guides) - Documentação oficial do Dart
-- [Título do Tutorial/Artigo](link) - Descrição breve da relevância para o projeto
 
 > Este README será expandido ao longo do desenvolvimento com instruções de instalação, screenshots, diagramas de arquitetura detalhados e guia de utilização completo.
