@@ -1,0 +1,22 @@
+# Flutter / Dart
+pawz/.dart_tool/
+pawz/.flutter-plugins
+pawz/.flutter-plugins-dependencies
+pawz/.packages
+pawz/build/
+pawz/.fvm/
+
+# Hive — dados locais gerados em runtime
+pawz/**.hive
+pawz/**.lock
+
+# Dependências (nunca commitar)
+pawz/pubspec.lock
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
