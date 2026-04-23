@@ -200,41 +200,52 @@ class _PetCard extends StatelessWidget {
   Future<void> _showPetActions(BuildContext context) async {
     final option = await showModalBottomSheet<_PetAction>(
       context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 32,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFFDDE8E1),
-                borderRadius: BorderRadius.circular(999),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFFF5FAF7),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 32,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFDEE4E1),
+                  borderRadius: BorderRadius.circular(999),
+                ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit_outlined, color: Color(0xFF1C2B20)),
-              title: Text(
-                'Edit',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFFFF),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  children: [
+                    _ActionRow(
+                      icon: Icons.edit_outlined,
+                      label: 'Edit',
+                      color: const Color(0xFF171D1B),
+                      onTap: () => Navigator.pop(context, _PetAction.edit),
+                    ),
+                    const SizedBox(height: 8),
+                    _ActionRow(
+                      icon: Icons.delete_outline,
+                      label: 'Delete',
+                      color: const Color(0xFFD64045),
+                      onTap: () => Navigator.pop(context, _PetAction.delete),
+                    ),
+                  ],
+                ),
               ),
-              onTap: () => Navigator.pop(context, _PetAction.edit),
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: Color(0xFFD64045)),
-              title: Text(
-                'Delete',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(0xFFD64045)),
-              ),
-              onTap: () => Navigator.pop(context, _PetAction.delete),
-            ),
-            const SizedBox(height: 8),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -260,19 +271,52 @@ class _PetCard extends StatelessWidget {
   Future<bool?> _confirmDelete(BuildContext context) {
     return showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete pet?'),
-        content: Text('This will remove ${pet.name} permanently.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: const Color(0xFFFFFFFF),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Delete pet?',
+                style: GoogleFonts.inter(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF171D1B),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This will remove ${pet.name} permanently.',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: const Color(0xFF6B8F71),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SecondaryButton(
+                      label: 'Cancel',
+                      onTap: () => Navigator.pop(dialogContext, false),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _PrimaryGradientButton(
+                      label: 'Delete',
+                      onTap: () => Navigator.pop(dialogContext, true),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Delete'),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -352,6 +396,115 @@ class _StatusBadge extends StatelessWidget {
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: config.text,
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActionRow({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Icon(icon, color: color),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PrimaryGradientButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _PrimaryGradientButton({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Ink(
+        height: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF316342), Color(0xFF4A7C59)],
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              letterSpacing: 0.4,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SecondaryButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _SecondaryButton({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Ink(
+        height: 48,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFFFF),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF316342),
+              letterSpacing: 0.4,
+            ),
+          ),
         ),
       ),
     );
