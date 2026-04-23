@@ -282,11 +282,11 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
               return true;
             },
             child: DraggableScrollableSheet(
-              initialChildSize: 0.56,
+              initialChildSize: 0.46,
               minChildSize: 0.18,
               maxChildSize: 0.9,
               snap: true,
-              snapSizes: const [0.18, 0.56, 0.9],
+              snapSizes: const [0.18, 0.46, 0.9],
               builder: (context, scrollController) => _buildBottomSheet(scrollController),
             ),
           ),
