@@ -154,6 +154,7 @@ class _PetCard extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (_) => PetDetailScreen(pet: pet)),
       ),
+      onLongPress: () => _showPetActions(context),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -195,6 +196,86 @@ class _PetCard extends StatelessWidget {
     // Lógica placeholder — será expandida na Fase 2
     return _PetStatus.upToDate;
   }
+
+  Future<void> _showPetActions(BuildContext context) async {
+    final option = await showModalBottomSheet<_PetAction>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 32,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDDE8E1),
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined, color: Color(0xFF1C2B20)),
+              title: Text(
+                'Edit',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              ),
+              onTap: () => Navigator.pop(context, _PetAction.edit),
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Color(0xFFD64045)),
+              title: Text(
+                'Delete',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: const Color(0xFFD64045)),
+              ),
+              onTap: () => Navigator.pop(context, _PetAction.delete),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+
+    switch (option) {
+      case _PetAction.edit:
+        if (!context.mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => NewPetScreen(pet: pet)),
+        );
+        break;
+      case _PetAction.delete:
+        final confirmed = await _confirmDelete(context);
+        if (!context.mounted || confirmed != true) return;
+        await context.read<PetProvider>().deletePet(pet.id);
+        break;
+      case null:
+        break;
+    }
+  }
+
+  Future<bool?> _confirmDelete(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete pet?'),
+        content: Text('This will remove ${pet.name} permanently.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _PetAvatar extends StatelessWidget {
@@ -225,6 +306,8 @@ class _PetAvatar extends StatelessWidget {
 }
 
 enum _PetStatus { upToDate, vaccineDue, medicineDue, antiparasiticDue }
+
+enum _PetAction { edit, delete }
 
 enum _AddOption { pet, vaccine, antiparasitic, medicine, calendarEvent }
 
