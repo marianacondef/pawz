@@ -47,6 +47,34 @@ class PetProvider extends ChangeNotifier {
     _loadPets();
   }
 
+  Future<void> updatePet({
+    required String id,
+    required String name,
+    required String species,
+    DateTime? birthDate,
+    DateTime? adoptionDate,
+    double? weight,
+    String? microchip,
+    String? photoPath,
+  }) async {
+    final pet = _box.get(id);
+    if (pet == null) {
+      return;
+    }
+
+    pet
+      ..name = name
+      ..species = species
+      ..birthDate = birthDate
+      ..adoptionDate = adoptionDate
+      ..weight = weight
+      ..microchip = microchip
+      ..photoPath = photoPath;
+
+    await pet.save();
+    _loadPets();
+  }
+
   Pet? getPetById(String id) {
     return _pets.firstWhere((p) => p.id == id, orElse: () => throw Exception('Pet not found'));
   }
