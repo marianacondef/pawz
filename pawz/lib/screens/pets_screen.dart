@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/pet_provider.dart';
 import '../models/pet.dart';
 import 'pet_detail_screen.dart';
+import 'new_pet_screen.dart';
 
 class PetsScreen extends StatelessWidget {
   const PetsScreen({super.key});
@@ -91,7 +94,10 @@ class PetsScreen extends StatelessWidget {
 
           switch (option) {
             case _AddOption.pet:
-              _showAddPetDialog(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NewPetScreen()),
+              );
               break;
             case _AddOption.vaccine:
               _showComingSoon(context, 'Vaccine');
@@ -122,52 +128,6 @@ class PetsScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (sheetContext) => const _AddOptionsSheet(),
-    );
-  }
-
-  void _showAddPetDialog(BuildContext context) {
-    final nameCtrl = TextEditingController();
-    final speciesCtrl = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Novo pet'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(labelText: 'Nome'),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: speciesCtrl,
-              decoration: const InputDecoration(labelText: 'Espécie (dog, cat...)'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (nameCtrl.text.isNotEmpty) {
-                context.read<PetProvider>().addPet(
-                  name: nameCtrl.text.trim(),
-                  species: speciesCtrl.text.trim().isEmpty
-                      ? 'other'
-                      : speciesCtrl.text.trim(),
-                );
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text('Guardar'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -246,7 +206,7 @@ class _PetAvatar extends StatelessWidget {
     if (pet.photoPath != null) {
       return CircleAvatar(
         radius: 28,
-        backgroundImage: AssetImage(pet.photoPath!),
+        backgroundImage: FileImage(File(pet.photoPath!)),
       );
     }
     return CircleAvatar(
