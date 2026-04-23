@@ -29,6 +29,7 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
   List<VetClinic> _filteredClinics = [];
   bool _loading = true;
   String? _error;
+  double _sheetExtent = 0.56;
 
   @override
   void initState() {
@@ -137,6 +138,113 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
     _mapController.move(LatLng(clinic.lat, clinic.lng), 16);
   }
 
+  void _showClinicDetails(VetClinic clinic) {
+    _focusClinic(clinic);
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFF5FAF7),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF1C2B20).withOpacity(0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  clinic.name,
+                  style: GoogleFonts.inter(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _DetailRow(
+                  icon: Icons.location_on_outlined,
+                  text: clinic.address,
+                ),
+                if (clinic.distanceKm != null) ...[
+                  const SizedBox(height: 8),
+                  _DetailRow(
+                    icon: Icons.route_outlined,
+                    text: '${clinic.distanceKm} km away',
+                  ),
+                ],
+                if (clinic.phone != null) ...[
+                  const SizedBox(height: 8),
+                  ..._splitPhoneNumbers(clinic.phone!).map(
+                    (phone) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: InkWell(
+                        onTap: () => _callClinic(phone),
+                        borderRadius: BorderRadius.circular(10),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: _DetailRow(
+                            icon: Icons.phone_outlined,
+                            text: phone,
+                            trailing: Text(
+                              'Call',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF316342),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _callClinic(String phone) async {
+    final normalizedPhone = phone.replaceAll(RegExp(r'[^0-9+]'), '');
+    final telUri = Uri(scheme: 'tel', path: normalizedPhone);
+    final launched = await launchUrl(telUri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to open phone dialer.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  List<String> _splitPhoneNumbers(String rawPhones) {
+    return rawPhones
+        .split(RegExp(r'\s*[;,]\s*'))
+        .map((phone) => phone.trim())
+        .where((phone) => phone.isNotEmpty)
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,16 +271,24 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
           if (_userLocation != null)
             Positioned(
               right: 16,
-              bottom: 420,
+              bottom: (MediaQuery.of(context).size.height * _sheetExtent) + 12,
               child: _buildRecenterButton(),
             ),
 
           // Bottom sheet com lista
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _buildBottomSheet(),
+          NotificationListener<DraggableScrollableNotification>(
+            onNotification: (notification) {
+              setState(() => _sheetExtent = notification.extent);
+              return true;
+            },
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.56,
+              minChildSize: 0.18,
+              maxChildSize: 0.9,
+              snap: true,
+              snapSizes: const [0.18, 0.56, 0.9],
+              builder: (context, scrollController) => _buildBottomSheet(scrollController),
+            ),
           ),
         ],
       ),
@@ -382,9 +498,8 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
     );
   }
 
-  Widget _buildBottomSheet() {
+  Widget _buildBottomSheet(ScrollController scrollController) {
     return Container(
-      height: 420,
       decoration: const BoxDecoration(
         color: Color(0xFFF0F5F2),
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
@@ -426,7 +541,7 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
                 ),
                 Text(
                   _loading
-                      ? 'A carregar...'
+                      ? 'Loading...'
                       : '${_filteredClinics.length} results',
                   style: GoogleFonts.inter(
                     fontSize: 14,
@@ -441,14 +556,14 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
 
           // Lista
           Expanded(
-            child: _buildClinicList(),
+            child: _buildClinicList(scrollController),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildClinicList() {
+  Widget _buildClinicList(ScrollController scrollController) {
     if (_loading) {
       return const Center(
         child: CircularProgressIndicator(color: _green),
@@ -497,13 +612,14 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
     }
 
     return ListView.separated(
+      controller: scrollController,
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
       itemCount: _filteredClinics.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (_, i) => _ClinicCard(
         clinic: _filteredClinics[i],
         onDirections: () => _openDirections(_filteredClinics[i]),
-        onViewDetails: () => _focusClinic(_filteredClinics[i]),
+        onViewDetails: () => _showClinicDetails(_filteredClinics[i]),
       ),
     );
   }
@@ -619,7 +735,7 @@ class _ClinicCard extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'View details',
+                      'See details',
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -662,6 +778,47 @@ class _ClinicCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final Widget? trailing;
+
+  const _DetailRow({
+    required this.icon,
+    required this.text,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const textMid = Color(0xFF6B8F71);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Icon(icon, size: 16, color: textMid),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: textMid,
+            ),
+          ),
+        ),
+        if (trailing != null) ...[
+          const SizedBox(width: 8),
+          trailing!,
+        ],
+      ],
     );
   }
 }
