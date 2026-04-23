@@ -224,7 +224,7 @@ class _PetAvatar extends StatelessWidget {
   }
 }
 
-enum _PetStatus { upToDate, vaccineDue, actionNeeded, medicineDue, antiparasiticDue }
+enum _PetStatus { upToDate, vaccineDue, medicineDue, antiparasiticDue }
 
 enum _AddOption { pet, vaccine, antiparasitic, medicine, calendarEvent }
 
@@ -244,11 +244,6 @@ class _StatusBadge extends StatelessWidget {
           label: 'Vaccine Due',
           bg: const Color(0xFFE6A817).withOpacity(0.1),
           text: const Color(0xFF7A5A0C),
-        ),
-      _PetStatus.actionNeeded => (
-          label: 'Action Needed',
-          bg: const Color(0xFFD64045).withOpacity(0.1),
-          text: const Color(0xFFBA1A1A),
         ),
       _PetStatus.medicineDue => (
           label: 'Medicine Due',
