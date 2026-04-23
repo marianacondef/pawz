@@ -6,10 +6,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../models/pet.dart';
 import '../providers/pet_provider.dart';
 
 class NewPetScreen extends StatefulWidget {
-  const NewPetScreen({super.key});
+  final Pet? pet;
+  const NewPetScreen({super.key, this.pet});
 
   @override
   State<NewPetScreen> createState() => _NewPetScreenState();
@@ -27,6 +29,34 @@ class _NewPetScreenState extends State<NewPetScreen> {
   String? _photoPath;
   final _now = DateTime.now();
   final _imagePicker = ImagePicker();
+
+  bool get _isEditing => widget.pet != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyPetValues();
+  }
+
+  void _applyPetValues() {
+    final pet = widget.pet;
+    if (pet == null) return;
+    _nameController.text = pet.name;
+    _selectedSpecies = pet.species;
+    _photoPath = pet.photoPath;
+    if (pet.birthDate != null) {
+      _birthDateController.text = _formatDate(pet.birthDate!);
+    }
+    if (pet.adoptionDate != null) {
+      _adoptionDateController.text = _formatDate(pet.adoptionDate!);
+    }
+    if (pet.weight != null) {
+      _weightController.text = pet.weight!.toString();
+    }
+    if (pet.microchip != null) {
+      _microchipController.text = pet.microchip!;
+    }
+  }
 
   @override
   void dispose() {
@@ -57,7 +87,7 @@ class _NewPetScreenState extends State<NewPetScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'New Pet',
+          _isEditing ? 'Edit Pet' : 'New Pet',
           style: GoogleFonts.inter(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -283,15 +313,28 @@ class _NewPetScreenState extends State<NewPetScreen> {
         ? null
         : _microchipController.text.trim();
 
-    await context.read<PetProvider>().addPet(
-          name: name,
-          species: species,
-          birthDate: birthDate,
-          adoptionDate: adoptionDate,
-          weight: weight,
-          microchip: microchip,
-          photoPath: _photoPath,
-        );
+    if (_isEditing) {
+      await context.read<PetProvider>().updatePet(
+            id: widget.pet!.id,
+            name: name,
+            species: species,
+            birthDate: birthDate,
+            adoptionDate: adoptionDate,
+            weight: weight,
+            microchip: microchip,
+            photoPath: _photoPath,
+          );
+    } else {
+      await context.read<PetProvider>().addPet(
+            name: name,
+            species: species,
+            birthDate: birthDate,
+            adoptionDate: adoptionDate,
+            weight: weight,
+            microchip: microchip,
+            photoPath: _photoPath,
+          );
+    }
 
     if (mounted) {
       Navigator.pop(context);
