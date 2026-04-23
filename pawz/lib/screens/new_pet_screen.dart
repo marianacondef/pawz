@@ -242,29 +242,32 @@ class _NewPetScreenState extends State<NewPetScreen> {
             left: 0,
             right: 0,
             bottom: 0,
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                child: Container(
-                  color: Colors.white.withOpacity(0.95),
-                  padding: const EdgeInsets.all(24),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _savePet,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4A7C59),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        elevation: 8,
-                        shadowColor: Colors.black.withOpacity(0.2),
-                      ),
-                      child: Text(
-                        'Save Pet',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+            child: SafeArea(
+              minimum: const EdgeInsets.only(bottom: 12),
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                  child: Container(
+                    color: Colors.white.withOpacity(0.95),
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _savePet,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4A7C59),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 8,
+                          shadowColor: Colors.black.withOpacity(0.2),
+                        ),
+                        child: Text(
+                          'Save Pet',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
