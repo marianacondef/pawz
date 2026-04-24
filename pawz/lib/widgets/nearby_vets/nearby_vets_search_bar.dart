@@ -51,7 +51,6 @@ class NearbyVetsSearchBar extends StatelessWidget {
               ),
             ),
           ),
-          const Icon(Icons.tune, color: NearbyVetsColors.textMid, size: 18),
           const SizedBox(width: 16),
         ],
       ),
