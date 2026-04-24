@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'pets_screen.dart';
+import '../widgets/pawz_app_bar.dart';
 import 'calendar_screen.dart';
 import 'nearby_vets_screen.dart';
+import 'pets_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -23,6 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _selectedIndex == 0 ? const PawzAppBar() : null,
       body: _screens[_selectedIndex],
       bottomNavigationBar: NavigationBar(
         backgroundColor: const Color(0xFFFFFF),
