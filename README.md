@@ -1,154 +1,188 @@
-# Pawz 🐾
----
-> Aplicação móvel para gestão centralizada da saúde e bem-estar de animais de estimação.
----
+# Pawz
 
-## 📖 Descrição do Projeto
+Aplicacao movel em Flutter para gestao centralizada da saude e bem-estar de animais de estimacao.
 
-Pawz é uma aplicação móvel desenvolvida em Flutter que permite aos tutores de animais de estimação centralizar toda a informação de saúde dos seus pets em um único lugar. A aplicação busca resolver um problema de descentralização dos dados veterinários, que normalmente ficam dispersos em cadernetas físicas e documentos avulsos, levando a lacunas e esquecimento por parte dos tutores. 
+## Descricao
 
-A Pawz agrega tudo isso numa interface intuitiva, com acesso a veterinários próximos, alertas, calendário de vacinas, antiparasitários e remédios.
+O objetivo da Pawz e reunir num unico lugar informacao importante sobre os pets, como dados basicos, historico de saude e apoio contextual ao tutor. Nesta fase, o projeto ja inclui navegacao principal, persistencia local de pets, formulario de registo/edicao, visualizacao de vacinas por pet e um modulo funcional de clinicas veterinarias proximas com mapa.
 
-### 👥 Público-Alvo
+## Estado atual do projeto
 
-Tutores de animais de estimação (cães, gatos e outros) que querem um diário digital de saúde para um ou múltiplos pets, acessível a qualquer momento no telemóvel.
+Neste momento, o projeto ja tem implementado:
 
----
+- Navegacao principal com `BottomNavigationBar` entre `NearbyVetsScreen`, `PetsScreen` e `CalendarScreen`
+- App bar partilhada entre o ecra principal de pets e o ecra de veterinarios proximos
+- Persistencia local com Hive para `Pet`, `Vaccine`, `Antiparasitic` e `Medication`
+- Gestao de estado com `Provider` para carregamento, criacao, edicao e remocao de pets
+- Lista de pets guardados localmente
+- Criacao e edicao de pets com:
+  - nome
+  - especie
+  - data de nascimento
+  - data de adocao
+  - peso
+  - microchip
+  - foto do pet via galeria com `image_picker`
+- Acoes sobre cada pet:
+  - abrir detalhe
+  - editar
+  - apagar com confirmacao
+- `PetDetailScreen` com tabs `Health`, `Mood` e `Visits`
+- Tab `Health` ligada a `VaccineListScreen`
+- Leitura de vacinas por pet a partir da box Hive
+- Modulo de veterinarios proximos com:
+  - obtencao de localizacao do utilizador via `geolocator`
+  - mapa com `flutter_map` e OpenStreetMap
+  - pesquisa de clinicas na Overpass API
+  - pesquisa textual de clinicas por nome ou morada
+  - bottom sheet com lista de clinicas
+  - recentrar mapa na localizacao do utilizador
+  - abrir indicacoes no Google Maps/app de navegacao
+  - dialogo com detalhes da clinica
+  - toque no marcador do mapa para abrir os detalhes da clinica
 
-### ✨ Funcionalidades Principais
+## Funcionalidades parciais ou ainda em falta
 
-#### Gestão de Pets
-- Registo de animais com nome, espécie, data de nascimento, data de adoção, peso e microchip
-- Foto de perfil por pet via câmara ou galeria (`image_picker`)
-- Badge de status por animal: *Up to Date*, *Vaccine Due*, *Action Needed* de acordo com o status de saúde do animal (i.e. vacina vencida, marcação de consulta necessária, etc)
+O README anterior listava varias funcionalidades planeadas que ainda nao estao concluidas no codigo atual. Neste momento:
 
-#### Calendário Global
-- Vista mensal com dots coloridos por tipo de evento (vacina, antiparasitário, consulta, medicação)
-- Lista cronológica de eventos com chip do pet associado
-- Ação "Mark as Done" por evento
+- `CalendarScreen` ainda esta em placeholder (`Calendar - soon`)
+- Tabs `Mood` e `Visits` ainda estao em placeholder no detalhe do pet
+- A area de saude ainda so tem listagem de vacinas implementada
+- Ainda nao existem ecras funcionais para registo/listagem de antiparasitarios e medicacao
+- O botao flutuante de adicionar ja apresenta opcoes, mas apenas a criacao de pet esta funcional
+- Os botoes de notificacoes e definicoes ainda nao tem comportamento implementado
+- O status dos pets (`Up to Date`, etc.) ainda usa logica placeholder
+- O projeto inclui dependencias para notificacoes locais e `timezone`, mas essa integracao ainda nao esta ligada aos fluxos da app
 
-#### Alertas
-- Painel acessível pelo ícone de sino
-- Agrupado em *Needs Attention* e *Upcoming*
-- Filtros por tipo: vacinas, antiparasitários, consultas
-- Badge vermelho com contagem de alertas não lidos
-- Notificações nativas do sistema operativo via `flutter_local_notifications`
+## Estrutura atual de ecras
 
-#### Veterinários Próximos
-- Mapa interativo com OpenStreetMap (`flutter_map`)
-- Geolocalização em tempo real via `geolocator`
-- Pesquisa de clínicas veterinárias próximas via Overpass API
-- Permissões de localização configuradas para Android e iOS
+```text
+MainScreen
+|-- NearbyVetsScreen
+|-- PetsScreen
+|   |-- NewPetScreen
+|   `-- PetDetailScreen
+|       |-- Tab: Health
+|       |   `-- VaccineListScreen
+|       |-- Tab: Mood (placeholder)
+|       `-- Tab: Visits (placeholder)
+`-- CalendarScreen (placeholder)
+```
 
----
+## Estrutura principal do projeto
 
-Por pet, estão disponíveis **três abas individuais**: 
+```text
+pawz/lib
+|-- main.dart
+|-- models/
+|   |-- pet.dart
+|   |-- vaccine.dart
+|   |-- antiparasitic.dart
+|   |-- medication.dart
+|   `-- vet_clinic.dart
+|-- providers/
+|   `-- pet_provider.dart
+|-- screens/
+|   |-- main_screen.dart
+|   |-- pets_screen.dart
+|   |-- new_pet_screen.dart
+|   |-- pet_detail_screen.dart
+|   |-- vaccine_list_screen.dart
+|   |-- nearby_vets_screen.dart
+|   `-- calendar_screen.dart
+|-- services/
+|   `-- overpass_service.dart
+`-- widgets/
+    |-- pawz_app_bar.dart
+    `-- nearby_vets/
+```
 
-#### Saúde
-- **Vacinas**: histórico completo com fabricante, lote, clínica, data e próxima dose; cards expansíveis com mais detalhes
-- **Antiparasitários**: registo por produto e tipo (oral, tópico, coleira, injetável), com alerta visual quando a próxima aplicação está a 7 dias ou menos
-- **Medicação**: lista de medicamentos ativos e passados com dosagem e frequência
-
-#### Humor Diário
-- Seletor de 5 estados: Happy, Neutral, Tired, Anxious, Sick
-- Campo de notas opcional
-- Histórico de humor em lista cronológica
-
-### Visitas
-- Histórico de consultas
-- Data da próxima consulta 
-- Informações do veterinário de preferência
-
-
----
-
-### 💻 Tecnologias Utilizadas
+## Tecnologias utilizadas
 
 | Categoria | Tecnologia |
 |---|---|
-| Framework | Flutter 3.22+ / Dart 3.4+ |
-| Gestão de estado | Provider |
-| Persistência local | Hive |
-| Notificações | flutter_local_notifications |
-| Câmara / Galeria | image_picker |
-| Geolocalização | geolocator |
+| Framework | Flutter |
+| Linguagem | Dart |
+| Gestao de estado | Provider |
+| Persistencia local | Hive / hive_flutter |
 | Mapas | flutter_map + OpenStreetMap |
-| Integração externa | Overpass API (veterinários) |
-| Design | Inter (Google Fonts), Material 3 |
+| Geolocalizacao | geolocator |
+| HTTP | http |
+| Navegacao externa | url_launcher |
+| Tipografia | google_fonts |
+| Imagem | image_picker |
+| Notificacoes | flutter_local_notifications |
+| Timezone | timezone |
 
----
+## Como executar
 
-### Estrutura de Ecrãs
+### Requisitos
 
+- Flutter instalado
+- Dart compativel com o SDK definido no projeto
+- Emulador Android/iOS ou dispositivo fisico
+
+### Passos
+
+1. Entrar na pasta da app:
+
+```bash
+cd pawz
 ```
-BottomNav
-├── [Pin] NearbyVetsScreen
-├── [Home] PetsScreen
-│     └── PetDetailScreen
-│           ├── Tab: Health
-│           │     ├── VaccineListScreen
-│           │     ├── AntiparasiticListScreen
-│           │     └── MedicationListScreen
-│           ├── Tab: Mood
-│           └── Tab: Visits
-└── [Calendar] CalendarScreen
 
-Global
-├── AlertsPanelSheet
-└── AddBottomSheet → New Pet / New Vaccine / New Antiparasitic / New Medicine / New Event
+2. Instalar dependencias:
+
+```bash
+flutter pub get
 ```
 
----
+3. Gerar ficheiros do Hive, se necessario:
 
+```bash
+dart run build_runner build
+```
 
-## 🗓️ Cronograma Simplificado
-| Entrega Associada | Data | Tarefas principais |
-|---|---|---|
-| **-** | 17–24 abr | Configurar Flutter, Hive e Provider; definir modelos de dados (Pet, Vaccine, Antiparasitic, Medication); gerar adaptadores Hive; estrutura de navegação com BottomNav + PetDetailScreen; ecrã PetsScreen básico |
-| **C1** | 24 abr | App a correr em dispositivo/emulador com pets, pelo menos um sub-ecrã de saúde funcional e persistência em Hive |
-| **-** | 24 abr–4 mai | Vacinas, antiparasitários e medicação; badge de status por pet; aba Humor e Visitas; painel de alertas com filtros; notificações nativas (flutter_local_notifications + timezone) |
-| **-** | 4–10 mai | CalendarScreen com dots por tipo de evento; lista cronológica + "Mark as Done"; mapa OpenStreetMap + geolocalização; integração Overpass API; permissões nativas |
-| **C2V** | 11 mai | Todas as funcionalidades principais visíveis em vídeo; app completa e navegável |
-| **-** | 11–17 mai | Foto de perfil (image_picker); AddBottomSheet para todos os eventos; refinamento UI Material 3 + Inter; testes em dispositivo real; correção de bugs |
-| **E** | 18 mai | Código, APK/IPA, documentação e README final entregues |
+4. Executar a app:
 
+```bash
+flutter run
+```
 
+## Modelos de dados ja definidos
 
+O projeto ja tem modelos Hive para:
 
----
+- `Pet`
+- `Vaccine`
+- `Antiparasitic`
+- `Medication`
 
-## ⚠️ Desafios Técnicos Previstos
+Atualmente, o fluxo completo implementado na interface trabalha sobretudo com `Pet` e leitura de `Vaccine`.
 
-**Hive com objetos aninhados** — os modelos têm listas de sub-objetos (ex: `Pet` contém `List<Vaccine>`). Requer adaptadores Hive gerados com `build_runner` e atenção à ordem dos `typeId` para evitar conflitos de deserialização.
+## Proximos passos sugeridos
 
-**Notificações com timezone** — as funcionalidades de vacinas, remédios e semelhantes requerem notificações de acordo com horário exato. O `flutter_local_notifications` requer o pacote `timezone` para agendar notificações com hora exata.
-
-**Overpass API para veterinários** — a API tem rate limiting, então a query precisa de ser construída corretamente para filtrar `amenity=veterinary` num raio geográfico a partir das coordenadas do utilizador.
-
-**Permissões nativas** — tanto câmara (`image_picker`) como localização (`geolocator`) requerem configuração manual no `AndroidManifest.xml` e `Info.plist`. Sem esta configuração a app crasha em dispositivo real.
-
-**Dots do calendário dinâmicos** — a geração de dots por data requer agregar todos os eventos de todos os pets numa estrutura `Map<DateTime, List<Event>>` eficiente, atualizada sempre que os dados mudam via Provider.
-
----
+- Implementar criacao e edicao de vacinas
+- Criar ecras de antiparasitarios e medicacao
+- Substituir placeholders de `Mood`, `Visits` e `Calendar`
+- Ligar notificacoes locais aos eventos de saude
+- Refinar a logica de status de cada pet
+- Melhorar tratamento de erros e estados offline no modulo de veterinarios
 
 ## Autor
 
-- **Nome:** Mariana Conde Fidelis
-- **Número de Aluno:** 86831
-- **Email Institucional:** a86831@ualg.pt
-- **Curso:** Engenharia de Sistemas e Tecnologias Informáticas
-- **Ano Letivo:** 2025/26
+- Nome: Mariana Conde Fidelis
+- Numero de Aluno: 86831
+- Email Institucional: a86831@ualg.pt
+- Curso: Engenharia de Sistemas e Tecnologias Informaticas
+- Ano Letivo: 2025/26
 
+## Licenca
 
-## Licença
+Projeto academico mantido em repositorio privado.
 
-*Nota: Este é um projeto académico sujeito a avaliação, pelo que se encontra num repositório estritamente privado, em total conformidade com os regulamentos internos da universidade.*
+Num contexto de codigo aberto, o software poderia ser distribuido sob a licenca MIT, conforme indicado em `LICENSE.md`.
 
-Num cenário hipotético de mercado de trabalho, em que este repositório fosse de código aberto, o *software* seria distribuído sob a Licença MIT - consulte o ficheiro [LICENSE.md](LICENSE.md) para os limites da sua utilização.
+## Referencias
 
-## Referências
-
-- [Flutter Documentation](https://docs.flutter.dev) - Documentação oficial do Flutter
-- [Dart Documentation](https://dart.dev/guides) - Documentação oficial do Dart
-
-> Este README será expandido ao longo do desenvolvimento com instruções de instalação, screenshots, diagramas de arquitetura detalhados e guia de utilização completo.
+- Flutter Documentation: https://docs.flutter.dev
+- Dart Documentation: https://dart.dev/guides
