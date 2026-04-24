@@ -12,13 +12,13 @@ class NearbyVetsMap extends StatelessWidget {
     required this.mapController,
     required this.userLocation,
     required this.filteredClinics,
-    required this.onClinicTap,
+    required this.onClinicDetails,
   });
 
   final MapController mapController;
   final LatLng? userLocation;
   final List<VetClinic> filteredClinics;
-  final ValueChanged<VetClinic> onClinicTap;
+  final ValueChanged<VetClinic> onClinicDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,7 @@ class NearbyVetsMap extends StatelessWidget {
                 width: 60,
                 height: 50,
                 child: GestureDetector(
-                  onTap: () => onClinicTap(clinic),
+                  onTap: () => onClinicDetails(clinic),
                   child: Column(
                     children: [
                       Container(

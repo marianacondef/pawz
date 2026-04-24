@@ -204,7 +204,7 @@ class _NearbyVetsScreenState extends State<NearbyVetsScreen> {
               mapController: _mapController,
               userLocation: _userLocation,
               filteredClinics: _filteredClinics,
-              onClinicTap: _focusClinic,
+              onClinicDetails: _showClinicDetails,
             ),
           ),
           SafeArea(
