@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/pet_provider.dart';
 import '../models/pet.dart';
+import '../widgets/pawz_app_bar.dart';
 import 'pet_detail_screen.dart';
 import 'new_pet_screen.dart';
 
@@ -15,37 +16,7 @@ class PetsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5FAF7),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5FAF7),
-        elevation: 0,
-        titleSpacing: 16,
-        title: Row(
-          children: [
-            const Icon(Icons.pets, color: Color(0xFF316342), size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'Pawz',
-              style: GoogleFonts.inter(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF316342),
-                letterSpacing: -0.6,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Color(0xFF1C2B20)),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Color(0xFF1C2B20)),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
+      appBar: const PawzAppBar(),
       body: Consumer<PetProvider>(
         builder: (context, provider, _) {
           return SingleChildScrollView(
